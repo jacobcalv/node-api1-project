@@ -1,5 +1,6 @@
 // implement your API here
 const express = require('express');
+const cors = require('cors')
 const db = require('./data/db.js')
 
 const server = express();
@@ -10,6 +11,7 @@ server.listen(port, () => {
 })
 
 server.use(express.json());
+server.use(cors())
 
 server.get('/', (req, res) => {
     res.redirect('http://localhost:4000/api/users');
@@ -18,12 +20,16 @@ server.get('/', (req, res) => {
 server.get('/api/users', (req, res) => {
     db.find()
         .then(users => {
-            res.status(200).json(users)
+            res.status(200).json({
+                success: true, 
+                users
+            })
         })
         .catch(err => {
             res.status(500).json({
                 errorMessage: "The users information could not be retrieved.",
-                success: false
+                success: false,
+                err
             })
         })
 })
@@ -36,7 +42,8 @@ server.get('/api/users/:id', (req, res) => {
               res.status(200).json(user)  
             } else {
                 res.status(404).json({ 
-                    message: `The user with the specified ID (${id}) does not exist. `
+                    message: `The user with the specified ID (${id}) does not exist. `,
+                    success: false
                 })
             }  
         })
@@ -44,7 +51,8 @@ server.get('/api/users/:id', (req, res) => {
             
             res.status(500).json({
                 errorMessage: "The user information could not be retrieved.",
-                success: false
+                success: false,
+                err
             })
         })
 })
@@ -69,7 +77,8 @@ server.post('/api/users', (req, res) => {
         .catch(err => {
             res.status(500).json({
                 success: false, 
-                errorMessage: "There was an error while saving the user to the database"
+                errorMessage: "There was an error while saving the user to the database",
+                err
             })
         })
 })
@@ -79,7 +88,7 @@ server.delete('/api/users/:id', (req, res) => {
     db.remove(id)
         .then(user => {
             if(user) {
-                res.status(204).end()
+                res.status(200).json({success: true})
             } else{
                 res.status(404).json({
                     success: false,
