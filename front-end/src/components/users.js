@@ -14,11 +14,9 @@ function Users() {
                 console.log("error:", error);
               });
     }, [])
+    console.log(users)
 
-    const deleteUser = (id) => {
-        axios.delete(`http://localhost:4000/api/users/${id}`)
-    }
-
+ 
     const Card = styled.div`
         border: 3px solid black;
         width: 25%;
@@ -36,7 +34,7 @@ function Users() {
                 <Card>
                     <Name>Name: {user.name}</Name>
                     <Bio>Bio: {user.bio}</Bio>
-                    <button onClick={deleteUser(user.id)}>Delete</button>
+                    {/* <button onClick={deleteUser(user.id)}>Delete</button> */}
                 </Card>
             )}
         </div>
