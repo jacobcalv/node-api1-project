@@ -12,7 +12,7 @@ server.listen(port, () => {
 server.use(express.json());
 
 server.get('/', (req, res) => {
-    res.send('you got mail');
+    res.redirect('http://localhost:4000/api/users');
 })
 
 server.get('/api/users', (req, res) => {
@@ -53,10 +53,18 @@ server.post('/api/users', (req, res) => {
     const body = req.body;
     db.insert(body)
         .then(user => {
-            res.status(201).json({
-                success: true,
-                user 
-            })
+            if(body.name && body.bio){
+                res.status(201).json({
+                    success: true,
+                    user 
+                }) 
+            }else{
+                res.status(400).json({
+                    success: false,
+                    errorMessage: "Please provide name and bio for the user."
+                })
+            }
+
         })
         .catch(err => {
             res.status(500).json({
@@ -91,12 +99,18 @@ server.put('/api/users/:id', (req, res) => {
     const body = req.body
     db.update(id, body)
         .then(user => {
-            if(user){
-                res.status(200).json({success: true, user})
+            if(user && body.name && body.bio){
+                res.status(200).json({
+                    success: true, user
+                })  
+            } else if (user){
+                res.status(400).json({
+                    success: false,
+                    errorMessage: "Please provide name and bio for the user." 
+                })
             } else{
-                res.status(404).json({
-                    success: false, 
-                    message: `id ${id} doesn't exist bruh`
+                res.status(404).json({ 
+                    message: "The user with the specified ID does not exist." 
                 })
             }
         })
